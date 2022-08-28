@@ -22,7 +22,7 @@ app.post('/api/auth',auth.authApi);
 app.post('/api/requeryapi',requery.RequeryApi);
 app.get('/api/zip',zip.zipfile);
 
-
+console.log("vbhjdbvkjvblib");
 
 
 
