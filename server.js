@@ -23,7 +23,7 @@ app.post('/api/requeryapi',requery.RequeryApi);
 app.get('/api/zip',zip.zipfile);
 
 
-console.log("hiiii---------dinesh");
+// console.log("hiiii---------dinesh");
 
 
 
