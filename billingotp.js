@@ -10,11 +10,13 @@ app.options("*", cors());
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+let requestdate=require('./requestdate.js');
 
-async function  billingOtp(req,res){
-    try{
-        let plaintext=req.body;
-        const ENCRYPTION_KEY = '1OY67PYHXN210322121936X6KCG559YT';
+async function billingOtp(req, res) {
+    try {
+        let request_date= await requestdate.generatedate();
+        let plaintext = req.body;
+        const ENCRYPTION_KEY = '5PP3LIZ8CB210322114958LBV9QBGE1F';
         const IV_LENGTH = 16;
         let iv = '1234567887654321';
         iv = new Buffer(iv, "binary");
@@ -28,7 +30,7 @@ async function  billingOtp(req,res){
             'url': 'https://bfluat.in.worldline-solutions.com/worldlineinterfaceexperia/WorldlineInterfaceExperia.svc/BILINTRequest',
             'headers': {
                 'SealValue': seal,
-                "SUPPLIERID": "123888",
+                "SUPPLIERID": "123999",
                 'Content-Type': 'application/json',
                 "disabled": true
             },
@@ -39,38 +41,42 @@ async function  billingOtp(req,res){
             if (error) throw new Error(error);
             console.log("================================== Response ================================== ")
             console.log(response.body);
-          let customerResponse=  decrypt(response.body);
-          return res.json({
-              data:customerResponse
-          })
+            let billingResponse = billingDecrypt(response.body);
+            return res.json({
+                data: billingResponse
+            })
         });
 
     }
-    catch(error){
-        return res.json({
-            message:error
-        })
+    catch (error) {
+        console.log(error);
     }
-    
+
 }
 
 
- function decrypt(key){
+function billingDecrypt(key) {
+   
+    console.log("----------------", key);
 
-    const ENCRYPTION_KEY = '1OY67PYHXN210322121936X6KCG559YT';
+    const ENCRYPTION_KEY = '5PP3LIZ8CB210322114958LBV9QBGE1F';
     let iv = '1234567887654321';
     const decipher = crypto.createDecipheriv('aes-256-cbc', ENCRYPTION_KEY, iv);
-    var receivedPlaintext =decipher.update(key, 'base64', null, 'utf8');
-    
-      try {
-           receivedPlaintext += decipher.final();
-           let decrypt_response=JSON.parse(receivedPlaintext)
-           return decrypt_response;
-       } catch (err) {
+    var receivedPlaintext = decipher.update(key, 'base64', null, 'utf8');
+    console.log("receivedPlaintext", receivedPlaintext);
+
+    try {
+        receivedPlaintext += decipher.final();
+        let decrypt_response = JSON.parse(receivedPlaintext)
+        return decrypt_response;
+    } catch (err) {
+        console.log(err);
         //    console.error('Authentication failed!', err);
-           return 'Authentication failed!' ;
-       }
- 
+        return 'Authentication failed!';
+    }
+
 }
 
-module.exports.billingOtp = billingOtp;
+//billingOtp();
+
+ module.exports.billingOtp = billingOtp;

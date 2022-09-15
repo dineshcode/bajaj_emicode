@@ -1,58 +1,48 @@
-var pdf = require("pdf-creator-node");
-var fs = require("fs");
+// var axios = require('axios');
+// var qs = require('qs');
+// var data = qs.stringify({
+//   'grant_type': 'client_credentials',
+//   'client_id': '3a02ba11-1585-4737-8577-2c9fe194f219',
+//   'client_secret': 'kiR7Q~9KVucp_.ff6NCMHUpNjWiUat0pIP~sG',
+//   'resource': 'https://management.azure.com' 
+// });
+// var config = {
+//   method: 'post',
+//   url: 'https://login.microsoftonline.com/bajajfinance.in/oauth2/token',
+//   headers: { 
+//     'Cookie': 'fpc=AhpM-DymtyZDtA6AsEx_xXmNYUY5AQAAAGukn9oOAAAA; stsservicecookie=estsfd; x-ms-gateway-slice=estsfd; fpc=AhpM-DymtyZDtA6AsEx_xXmgHnfcAQAAAPzdpNoOAAAA; stsservicecookie=estsfd; x-ms-gateway-slice=estsfd', 
+//     'Content-Type': 'application/x-www-form-urlencoded'
+//   },
+//   data : data
+// };
 
-// Read HTML Template
-var html = fs.readFileSync("template.html", "utf8");
-//13 128 Green
-async function pdfdownload(){
+// axios(config)
+// .then(function (response) {
+//   console.log(JSON.stringify(response.data));
+// })
+// .catch(function (error) {
+//   console.log(error);
+// });
 
-var options = {
-    format: "A3",
-    orientation: "portrait",
-    border: "10mm",
-    header: {
-        height: "45mm",
-        contents: '<div style="text-align: center;">Author: Shyam Hajare</div>'
-    },
-    footer: {
-        height: "28mm",
-        contents: {
-            first: 'Cover page',
-            2: 'Second page', // Any page number is working. 1-based index
-            default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
-            last: 'Last Page'
-        }
-    }
+
+var axios = require('axios');
+var data = JSON.stringify({
+  "name": "dinesh"
+});
+
+var config = {
+  method: 'post',
+  url: 'https://aeab-183-82-111-252.in.ngrok.io/api/testing',
+  headers: { 
+    'Content-Type': 'application/json'
+  },
+  data : data
 };
 
-var users = [
-    {
-     "image":"https://s3.ap-south-1.amazonaws.com/happimobiles/studentinfo/IMG-20220825-WA0013.jpg"
-    },
-    {
-        "image":"https://s3.ap-south-1.amazonaws.com/happimobiles/studentinfo/IMG-20220825-WA0013.jpg"
-    },
-    {
-        "image":"https://s3.ap-south-1.amazonaws.com/happimobiles/studentinfo/IMG-20220825-WA0013.jpg"
-    },
-  ];
-  var document = {
-    html: html,
-    data: {
-      users: users,
-    },
-    path: "./output.pdf",
-    type: "",
-  };
-
-  pdf
-  .create(document, options)
-  .then((res) => {
-    console.log(res.filename);
-  })
-  .catch((error) => {
-    console.error(error);
-  });
-}
-
-pdfdownload();
+axios(config)
+.then(function (response) {
+  console.log("-------------",JSON.stringify(response.data));
+})
+.catch(function (error) {
+  console.log(error);
+});

@@ -5,16 +5,34 @@ const request = require('request');
 const express = require('express');
 var cors = require("cors");
 const res = require('express/lib/response');
+//let requestdate=require('./requestdate.js');
 const app = express();
 app.options("*", cors());
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+let requestdate=require('./requestdate.js');
 
 async function customerSearchApi(req,res) {
+   
     try {
-        let plaintext=req.body;
+        let request_date= await requestdate.generatedate();
+        //console.log("req.body----",req.body);
+        let plaintext={}
+
+        plaintext.TXNTYPE= "BILSRCH",
+        plaintext.Request_ID="CUST"+request_date,
+        plaintext.Dealer_Code="123888",
+        plaintext.Request_Date_Time=request_date,
+        plaintext.Dealer_Validation_Key="4462137033265896",
+        plaintext.Card_number="2030400222777222"
+       
+        plaintext.ACQCHANNEL=22
+        
+
+        console.log("plaintext----",plaintext);
+
         const ENCRYPTION_KEY = '1OY67PYHXN210322121936X6KCG559YT';
         const IV_LENGTH = 16;
         let iv = '1234567887654321';
@@ -24,6 +42,8 @@ async function customerSearchApi(req,res) {
         encrypted = Buffer.concat([encrypted, cipher.final()]);
         var enc = encrypted.toString('base64');
         var seal = md5(enc + ENCRYPTION_KEY);
+        console.log("seal",seal);
+        console.log("encrypted",enc);
         var customer_config = {
             'method': 'POST',
             'url': 'https://bfluat.in.worldline-solutions.com/worldlineinterfaceexperia/WorldlineInterfaceExperia.svc/BILINTRequest',
@@ -37,24 +57,40 @@ async function customerSearchApi(req,res) {
 
         };
 
+        let responsedata={
+                 
+            "CUST_RESI_CITY_NAME": "",
+            "DIGITAL_PROMO": "",
+            "CD_PROMO": "",
+            "INTERCITY_DELIVERY_FLAG": "N",
+            "RESPONSE_DESCRIPTION": "SUCCESS",
+            "RESPONSE_CODE": "00",
+            "RESPONSE_DATE_TIME": "20220912173440",
+            "REQUEST_ID": "CUST12092022173431",
+            "CUSTOMER_PINCODE": "411040",
+            "TXNTYPE": "BILSRCH"
+        
+    }
+    return res.json({
+        data:responsedata
+    })
+
         request(customer_config, function (error, response) {
             if (error) throw new Error(error);
-            console.log("================================== Response ================================== ")
+            console.log("================================== Response ================================== ");
+           
             console.log(response.body);
           let customerResponse=     decrypt(response.body);
+          console.log( customerResponse);
           return res.json({
               data:customerResponse
           })
         });
      }
     catch (error) {
-        return res.json({
-            message: error
-        })
+       console.log(error);
     }
 }
-
-
 
   function decrypt(key){
 
@@ -73,4 +109,7 @@ async function customerSearchApi(req,res) {
        }
  
 }
+
+//customerSearchApi();
+
 module.exports.customerSearchApi = customerSearchApi;
